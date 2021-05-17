@@ -10,5 +10,11 @@ const getData = async (url) => {
   return data;
 }
 
-getData(baseSearchURL + 'henlow')
+const search = (searchString) => {
+  const searchURL = `${baseSearchURL}${searchString}`;
+
+  return getData(searchURL);
+}
+
+search('henlow')
   .then(data => console.log(data));
