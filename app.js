@@ -10,11 +10,22 @@ const getData = async (url) => {
   return data;
 }
 
+const getStops = async (data) => {
+  // replace street key with target dataset key
+  const streetKey = data.streets[0].key;
+  const stops = await getData(`${baseStopURL}${streetKey}`);
+
+  return stops;
+}
+
 const search = (searchString) => {
   const searchURL = `${baseSearchURL}${searchString}`;
 
   return getData(searchURL);
 }
 
-search('henlow')
-  .then(data => console.log(data));
+search('kinver')
+  // .then(data => buildHTMLLinks)
+  // getStops on click
+  .then(data => getStops(data))
+  .then(data => console.log(data))
