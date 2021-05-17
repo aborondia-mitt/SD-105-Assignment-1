@@ -2,48 +2,78 @@ const apiKey = 'd7PLUCql1DUVNbas9tgX';
 const baseSearchURL = `https://api.winnipegtransit.com/v3/streets.json?usage=long&api-key=${apiKey}&name=`;
 const baseStopURL = `https://api.winnipegtransit.com/v3/stops.json?usage=long&api-key=${apiKey}&street=`;
 
-const getData = async url => {
-  const response = await fetch(url);
-  const data = await response.json();
+class TransitSchedule {
+  constructor() {
+    this.searchResults = [];
+    this.stops = [];
+  }
+  search = searchString => {
+    const searchURL = `${baseSearchURL}${searchString}`;
 
-  return data;
+    return transitSchedule.getData(searchURL);
+  }
+
+  getStops = street => {
+    // replace street key with target dataset key
+    const streetKey = street.streets[0].key;
+    const streetStops = transitSchedule.getData(`${baseStopURL}${streetKey}`);
+  
+    return streetStops;
+  }
+
+  getData = async url => {
+    const response = await fetch(url);
+    const data = await response.json();
+  
+    return data;
+  }
+  
+  // const getStopTimes = (stops) => {
+  //   // const scheduledStops = 
+  //   // console.log(stops)
+  //   stops.forEach(stop => {
+  
+  //     console.log(new Date(stop['stop-schedule']['route-schedules'][0]['scheduled-stops'][0].times.arrival.estimated).toLocaleTimeString());
+  //   })
+  // }
+  
+  getStopScheduleURL = stop => {
+    const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stop.key}/schedule.json?usage=long&api-key=${apiKey}`;
+  
+    return scheduleURL;
+  }
+  
+  getStopSchedules = async streetStops => {
+    let scheduledStops = [];
+  
+    streetStops.stops.forEach(stop => {
+      const stopScheduleURL = transitSchedule.getStopScheduleURL(stop);
+  
+      scheduledStops.push(transitSchedule.getData(stopScheduleURL));
+    })
+  
+    scheduledStops = await Promise.all(scheduledStops);
+    // const soonestStops = getStopTimes(scheduledStops);
+  
+    // return soonestStops;
+  }
 }
 
-const getStopScheduleURL = stop => {
-  const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stop.key}/schedule.json?usage=long&api-key=${apiKey}`;
 
-  return scheduleURL;
-}
 
-const getStopSchedules = data => {
-  const scheduledStops = [];
+const transitSchedule = new TransitSchedule();
 
-  data.stops.forEach(async (stop) => {
-    const stopScheduleURL = getStopScheduleURL(stop);
-
-    scheduledStops.push(getData(stopScheduleURL));
+transitSchedule.search('kinver')
+  .then(searchResults => {
+    transitSchedule.searchResults = searchResults.streets;
+    return transitSchedule.getStops(searchResults)
   })
-
-  return Promise.all(scheduledStops);
-}
-
-const getStops = data => {
-  // replace street key with target dataset key
-  const streetKey = data.streets[0].key;
-  const stops = getData(`${baseStopURL}${streetKey}`);
-
-  return stops;
-}
-
-const search = searchString => {
-  const searchURL = `${baseSearchURL}${searchString}`;
-
-  return getData(searchURL);
-}
-
-search('kinver')
+  .then(stops => {
+    transitSchedule.stops = stops.stops;
+    console.log(transitSchedule.stops);
+  })
+// .then(()=> console.log(transitSchedule.searchResults) )
   // .then(data => buildHTMLLinks)
   // getStops on click
-  .then(data => getStops(data))
-  .then(data => getStopSchedules(data))
-  .then(data => console.log(data))
+  // .then(data => getStops(data))
+  // .then(data => getStopSchedules(data))
