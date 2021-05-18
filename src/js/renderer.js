@@ -33,7 +33,7 @@ class Renderer {
     return searchList;
   }
 
-  renderPage = (streetName = '') => {
+  renderPage = () => {
     document.body.innerHTML = `
 <aside>
   <div class="titlebar">
@@ -48,7 +48,7 @@ class Renderer {
 </aside>
 <main>
   <div id="street-name" class="titlebar">
-    Displaying results for ${streetName}
+    Displaying results for ${transitSchedule.currentStreetTitle}
   </div>
   <table>
     <thead>

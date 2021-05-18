@@ -6,9 +6,10 @@ class TransitSchedule {
   constructor() {
     this.searchResults = [];
     this.streetStops = [];
+    this.currentStreetTitle = '';
   }
 
-  search = async (searchString) => {
+  search = async searchString => {
     if (searchString === '') {
       searchString = 'NOSEARCHENTERED';
     }
@@ -22,7 +23,6 @@ class TransitSchedule {
     })
 
     this.searchResults = filteredResults;
-    this.streetStops = [];
 
     return searchResults;
   }
@@ -44,27 +44,27 @@ class TransitSchedule {
     return filteredStops;
   }
 
-  getData = async (url) => {
+  getData = async url => {
     const response = await fetch(url);
     const data = await response.json();
 
     return data;
   }
 
-  getTime = (additionalHours = 0) => {
+  getTime = additionalHours => {
     return (parseInt(moment(new Date()).format('h')) + additionalHours).toString().padStart(2, '0')
   }
 
   getStopScheduleURL = stopId => {
     const todaysDate = new Date().getDate();
     const inSixHours = this.getTime(6);
-    const currentHour = this.getTime();
+    const currentHour = this.getTime(0);
     const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=2021-05-${todaysDate}T${currentHour}:00&end=2021-05-${todaysDate}T${inSixHours}:00&api-key=${apiKey}`;
 
     return scheduleURL;
   }
 
-  getStopInformation = async (streetStop) => {
+  getStopInformation = async streetStop => {
     const schedule = { busNumber: 'N/A', nextStop: 'N/A' };
     const stopScheduleURL = this.getStopScheduleURL(streetStop.id);
     const stops = await this.getData(stopScheduleURL);
@@ -84,7 +84,7 @@ class TransitSchedule {
     return schedule;
   }
 
-  getStopSchedules = async (filteredStops) => {
+  getStopSchedules = async filteredStops => {
     const stopsWithSchedule = filteredStops;
 
     for (let i = 0; i < stopsWithSchedule.length; i++) {

@@ -15,7 +15,8 @@ class UI {
     if (target.tagName === 'A') {
       transitSchedule.getStops(target.dataset.streetKey)
         .then(streetStopsData => transitSchedule.streetStops = streetStopsData)
-        .then(() => renderer.renderPage(target.textContent))
+        .then(() => transitSchedule.currentStreetTitle = target.textContent)
+        .then(() => renderer.renderPage())
     }
   }
 }
