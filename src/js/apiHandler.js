@@ -69,7 +69,4 @@ class TransitSchedule {
   }
 }
 
-
-
 const transitSchedule = new TransitSchedule();
-
