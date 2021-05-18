@@ -29,11 +29,11 @@ document.getElementById('current-time').innerHTML = TimeFormatter.getCurrentTime
     const searchResults = transitSchedule.searchResults;
 
     if (searchInput === '' || searchInput === undefined) {
-      return 'Please enter a valid search';
+      return '<p>Please enter your search</p>';
     }
 
     if (searchResults.length <= 0) {
-      return 'There were no results for that search'
+      return '<p>There were no results for that search</p>'
     }
 
     searchResults.forEach(result => {
