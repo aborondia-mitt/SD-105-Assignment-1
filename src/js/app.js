@@ -10,7 +10,7 @@ class TransitSchedule {
   }
 
   search = async (searchString) => {
-    if(searchString === ''){
+    if (searchString === '') {
       searchString = 'no input';
     }
 
@@ -27,16 +27,16 @@ class TransitSchedule {
     return searchResults;
   }
 
-  getStops = async street => {
-    // replace street key with target dataset key
-    const streetKey = this.searchResults[0].id;
-    const streetStops = await this.getData(`${baseStopURL}${streetKey}`);
+  getStops = async streetId => {
+    const streetStops = await this.getData(`${baseStopURL}${streetId}`);
+    const filteredStops = [];
     streetStops.stops.forEach(stop => {
-      this.streetStops.push({ id: stop.key, name: stop.name, crossStreet: stop['cross-street'].name, direction: stop.direction })
+      filteredStops.push({ id: stop.key, name: stop.name, crossStreet: stop['cross-street'].name, direction: stop.direction })
     })
 
-    this.getStopSchedules();
+    this.streetStops = filteredStops;
 
+    this.getStopSchedules();
   }
 
   getData = async (url) => {
