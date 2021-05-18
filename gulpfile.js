@@ -35,7 +35,7 @@ function htmlTask() {
 }
 
 function scriptsTask() {
-  return src(['src/js/apiHandler.js', 'src/js/renderer.js', 'src/js/UI.js', 'src/js/moment.js'])
+  return src(['src/js/moment.js', 'src/js/timeFormatter.js', 'src/js/apiHandler.js', 'src/js/UI.js', 'src/js/renderer.js'])
     .pipe(crLfReplace())
     .pipe(sourcemaps.init())
     .pipe(concat('bundle.js'))

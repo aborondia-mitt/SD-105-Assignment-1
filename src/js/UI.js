@@ -8,8 +8,6 @@ class UI {
     }
   }
 
-
-
   handleSubmit = async (event) => {
     const searchInput = this.searchInput.get();
     await transitSchedule.getSearchResults(searchInput);
