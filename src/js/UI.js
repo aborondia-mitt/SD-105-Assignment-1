@@ -15,13 +15,12 @@ class UI {
     renderer.renderPage(searchInput);
   }
 
-  handleClick = target => {
+  handleClick = async target => {
     if (target.tagName === 'A') {
-      transitSchedule.getStops(target.dataset.streetKey)
+      await transitSchedule.getStops(target.dataset.streetKey)
         .then(streetStopsData => transitSchedule.streetStops = streetStopsData)
-        .then(() => transitSchedule.currentStreetTitle = target.textContent)
-        // .then(()=> console.log((transitSchedule.searchCompletionTime.get())))
-        .then(() => renderer.renderPage(renderer.currentSearchedInput))
+      renderer.currentStreetTitle = target.textContent
+      renderer.renderPage(renderer.currentSearchedInput)
     }
   }
 }
@@ -40,3 +39,6 @@ document.body.addEventListener('click', event => {
   ui.handleClick(target);
 })
 
+const currentTimeUpdater = setInterval(() => {
+  renderer.renderCurrentTime();
+}, 100)

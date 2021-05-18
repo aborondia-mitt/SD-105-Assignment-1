@@ -1,6 +1,7 @@
 class Renderer {
   constructor() {
     this.currentSearchedInput = '';
+    this.currentStreetTitle = '';
   }
 
   renderCurrentTime = () => {
@@ -56,7 +57,7 @@ document.getElementById('current-time').innerHTML = TimeFormatter.getCurrentTime
 </aside>
 <main>
   <div id="street-name" class="titlebar">
-    Displaying results for: ${transitSchedule.currentStreetTitle}<br>
+    Displaying results for: ${this.currentStreetTitle}<br>
     Search Request Time: ${transitSchedule.scheduleQueryTime}<br>
     Current Time: <span id="current-time">${TimeFormatter.getCurrentTime()}</span>
   </div>
@@ -81,7 +82,3 @@ document.getElementById('current-time').innerHTML = TimeFormatter.getCurrentTime
 const renderer = new Renderer();
 
 renderer.renderPage();
-
-setInterval(() => {
-  renderer.renderCurrentTime();
-}, 100)

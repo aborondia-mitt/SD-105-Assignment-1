@@ -18,12 +18,11 @@ class TransitSchedule {
 
   getData = async url => {
     const response = await fetch(url);
-    if (response.status !== 200) {
-      throw new Error('Fetching of URL not successful')
-    }
+    // if (response.status !== 200) {
+    //   throw new Error('Fetching of URL not successful')
+    // }
 
     const data = await response.json();
-
     return data;
   }
 
@@ -31,6 +30,7 @@ class TransitSchedule {
     const todaysDate = new Date().getDate();
     const searchStartTime = TimeFormatter.formatTimeForApiURL(0);
     const searchEndTime = TimeFormatter.formatTimeForApiURL(6);
+    console.log(searchStartTime)
     const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=2021-05-${todaysDate}T${searchStartTime}&end=2021-05-${todaysDate}T${searchEndTime}&api-key=${baseApiData.apiKey}`;
 
     return scheduleURL;

@@ -4,7 +4,7 @@ class TimeFormatter {
   }
 
   static formatTimeForApiURL = hoursFromNow => {
-    const twoDigitHour = parseInt(moment(new Date()).format('hh')) + hoursFromNow;
+    const twoDigitHour = moment(new Date()).add(hoursFromNow, 'hours').format('hh');
     return moment(new Date()).format(`${twoDigitHour}:mm:ss`);
   }
 }
