@@ -12,16 +12,12 @@ class TransitSchedule {
   constructor() {
     this.searchResults = [];
     this.streetStops = [];
-    this.scheduleQueryTime = '';
+    this.startOfQuery = '';
     this.currentStreetTitle = '';
   }
 
   getData = async url => {
     const response = await fetch(url);
-    // if (response.status !== 200) {
-    //   throw new Error('Fetching of URL not successful')
-    // }
-
     const data = await response.json();
 
     return data;
@@ -31,7 +27,6 @@ class TransitSchedule {
     const todaysDate = new Date().getDate();
     const searchStartTime = TimeFormatter.formatTimeForApiURL(0);
     const searchEndTime = TimeFormatter.formatTimeForApiURL(6);
-    console.log(searchStartTime)
     const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=2021-05-${todaysDate}T${searchStartTime}&end=2021-05-${todaysDate}T${searchEndTime}&api-key=${baseApiData.apiKey}`;
 
     return scheduleURL;
@@ -44,13 +39,15 @@ class TransitSchedule {
     const stopSchedule = stops['stop-schedule']['route-schedules'][0];
 
     if (stopSchedule !== undefined) {
-      schedule.busNumber = (stopSchedule.route.key);
       const arrivalTime = stopSchedule['scheduled-stops'][0].times.arrival;
+
+      schedule.busNumber = stopSchedule.route.key;
 
       if (arrivalTime !== undefined) {
         const nextStop = new Date(arrivalTime.estimated);
+
         schedule.nextStop = moment(nextStop).format('LT');
-        schedule.rawStopTime = nextStop.getTime();
+        schedule.stopTimeInMilliseconds = nextStop.getTime();
       }
     }
 
@@ -69,18 +66,18 @@ class TransitSchedule {
 
   getStops = async streetId => {
     let filteredStops = [];
-    transitSchedule.scheduleQueryTime = TimeFormatter.getCurrentTime();
+    transitSchedule.startOfQuery = TimeFormatter.getCurrentTime();
 
     const streetStops = await this.getData(`${baseApiData.baseStopURL.get()}${streetId}`);
-
 
     streetStops.stops.forEach(stop => {
       filteredStops.push({ id: stop.key, name: stop.name, crossStreet: stop['cross-street'].name, direction: stop.direction })
     })
 
     filteredStops = await this.getStopSchedules(filteredStops);
+
     filteredStops.sort((a, b) => {
-      return a.schedule.rawStopTime - b.schedule.rawStopTime;
+      return a.schedule.stopTimeInMilliseconds - b.schedule.stopTimeInMilliseconds;
     })
 
     return filteredStops;

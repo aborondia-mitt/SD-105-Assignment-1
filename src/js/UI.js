@@ -11,7 +11,9 @@ class UI {
   handleSubmit = async (event) => {
     const searchInput = this.searchInput.get();
     const sanitizedInput = StringFormatter.sanitizeInputString(searchInput);
+
     await transitSchedule.getSearchResults(sanitizedInput);
+
     renderer.currentSearchedInput = searchInput;
     renderer.renderPage(searchInput);
   }
@@ -20,13 +22,13 @@ class UI {
     if (target.tagName === 'A') {
       await transitSchedule.getStops(target.dataset.streetKey)
         .then(streetStopsData => transitSchedule.streetStops = streetStopsData)
+
       renderer.currentStreetTitle = target.textContent
       renderer.renderPage(renderer.currentSearchedInput)
     }
   }
 }
 
-const ui = new UI();
 
 document.body.addEventListener('submit', event => {
   event.preventDefault()
@@ -43,3 +45,5 @@ document.body.addEventListener('click', event => {
 const currentTimeUpdater = setInterval(() => {
   renderer.renderCurrentTime();
 }, 100)
+
+const ui = new UI();

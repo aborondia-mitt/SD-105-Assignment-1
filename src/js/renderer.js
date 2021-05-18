@@ -5,21 +5,23 @@ class Renderer {
   }
 
   renderCurrentTime = () => {
-document.getElementById('current-time').innerHTML = TimeFormatter.getCurrentTime();
+    document.getElementById('current-time').innerHTML = TimeFormatter.getCurrentTime();
   }
 
   buildScheduledStopsHTML = () => {
     let scheduledStopList = '';
-    for (let i = 0; i < transitSchedule.streetStops.length; i++) {
-      const stop = transitSchedule.streetStops[i];
-      scheduledStopList += `<tr>
-      <td>${stop.name}</td>
-      <td>${stop.crossStreet}</td>
-      <td>${stop.direction}</td>
-      <td>${stop.schedule.busNumber}</td>
-      <td>${stop.schedule.nextStop}</td>
-        </tr>`;
-    }
+
+    transitSchedule.streetStops.forEach(stop => {
+      scheduledStopList += `
+      <tr>
+        <td>${stop.name}</td>
+        <td>${stop.crossStreet}</td>
+        <td>${stop.direction}</td>
+        <td>${stop.schedule.busNumber}</td>
+        <td>${stop.schedule.nextStop}</td>
+      </tr>
+      `;
+    })
 
     return scheduledStopList;
   }
@@ -28,17 +30,18 @@ document.getElementById('current-time').innerHTML = TimeFormatter.getCurrentTime
     let searchList = '';
     const searchResults = transitSchedule.searchResults;
 
-    if (searchInput === '' || searchInput === undefined) {
+    if (searchInput === undefined) {
       return '<p>Please enter your search</p>';
     }
 
-    if (searchResults.length <= 0) {
+    if (searchInput === '' || searchResults.length <= 0) {
       return '<p>There were no results for that search</p>'
     }
 
     searchResults.forEach(result => {
       searchList += `<a href="#" data-street-key=${result.id}>${result.streetName}</a>`
     })
+
     return searchList;
   }
 
@@ -58,7 +61,7 @@ document.getElementById('current-time').innerHTML = TimeFormatter.getCurrentTime
 <main>
   <div id="street-name" class="titlebar">
     Displaying results for: ${this.currentStreetTitle}<br>
-    Search Request Time: ${transitSchedule.scheduleQueryTime}<br>
+    Search Request Time: ${transitSchedule.startOfQuery}<br>
     Current Time: <span id="current-time">${TimeFormatter.getCurrentTime()}</span>
   </div>
   <table>
