@@ -23,7 +23,11 @@ function browserSync() {
 function htmlTask() {
   return src('src/*.html')
     .pipe(htmlReplace({
-      js: 'js/bundle.js',
+      js: {
+        defer: '',
+        src: 'js/bundle.js',
+        tpl: '<script defer="" src="%s"></script>'
+      },
       css: 'styles/styles.css'
     }))
     .pipe(dest('dist'))
@@ -31,7 +35,7 @@ function htmlTask() {
 }
 
 function scriptsTask() {
-  return src('src/js/*.js')
+  return src(['src/js/apiHandler.js', 'src/js/renderer.js', 'src/js/UI.js', 'src/js/moment.js'])
     .pipe(crLfReplace())
     .pipe(sourcemaps.init())
     .pipe(concat('bundle.js'))
