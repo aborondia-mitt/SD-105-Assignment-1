@@ -68,31 +68,28 @@ class Renderer {
   }
 }
 
+class UI {
+  constructor() {
+
+  }
+  handleSubmit = async (event) => {
+    let searchInput = document.querySelector('#search-input').value;
+    
+    if (event.key === 'Enter' && event.target.id === 'search-input') {
+      await transitSchedule.search(searchInput);
+      renderer.renderPage();
+      searchInput = '';
+    }
+  }
+}
+
 const renderer = new Renderer();
+const ui = new UI();
 renderer.renderPage();
 
 
 
-document.body.addEventListener('keydown', async (event) => {
-  if (event.key === 'Enter' && event.target.id === 'search-input') {
-    const searchInput = document.querySelector('#search-input').value;
-      await transitSchedule.search(searchInput);
-    // event.preventDefault();
-    // .then(searchResults => {
-    //   // return transitSchedule.getStops(searchResults)
-    // })
-    // .then(stops => {
-    //   // transitSchedule.streetStops = stops.stops;
-    //   // return transitSchedule.getStopSchedules();
-    // })
-    // .then(schedules => console.log(transitSchedule))
-    renderer.renderPage();
-    searchInput.value = '';
-    // .then(()=> console.log(transitSchedule.searchResults) )
-    // .then(data => buildHTMLLinks)
-    // getStops on click
-    // .then(data => getStops(data))
-    // .then(data => getStopSchedules(data))
-  }
+document.body.addEventListener('keydown', event => {
+  ui.handleSubmit(event);
 })
 
