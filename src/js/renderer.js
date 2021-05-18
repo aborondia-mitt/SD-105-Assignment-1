@@ -19,6 +19,7 @@ class Renderer {
   }
 
   buildSearchResultHTML = (searchInput) => {
+    let searchList = '';
     const searchResults = transitSchedule.searchResults;
 
     if (searchInput === '' || searchInput === undefined) {
@@ -28,10 +29,6 @@ class Renderer {
     if (searchResults.length <= 0) {
       return 'There were no results for that search'
     }
-
-
-
-    let searchList = '';
 
     searchResults.forEach(result => {
       searchList += `<a href="#" data-street-key=${result.id}>${result.streetName}</a>`

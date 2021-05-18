@@ -16,10 +16,10 @@ class TransitSchedule {
   }
 
   getData = async url => {
+    console.log(url)
     const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error('Fetch not successful')
+    if (response.status !== 200) {
+      throw new Error('Fetching of URL not successful')
     }
 
     const data = await response.json();
@@ -28,15 +28,15 @@ class TransitSchedule {
   }
 
   formatTimeForApiURL = hoursFromNow => {
-    const twoDigitHour = (parseInt(moment(new Date()).format('h')) + hoursFromNow).toString().padStart(2, '0');
-    return moment(new Date()).format(`${twoDigitHour}:m`);
+    const twoDigitHour = parseInt(moment(new Date()).format('hh')) + hoursFromNow;
+    return moment(new Date()).format(`${twoDigitHour}:mm:ss`);
   }
 
   getStopScheduleURL = stopId => {
     const todaysDate = new Date().getDate();
-    const searchEndTime = this.formatTimeForApiURL(6);
     const searchStartTime = this.formatTimeForApiURL(0);
-    const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=2021-05-${todaysDate}T${searchStartTime}:00&end=2021-05-${todaysDate}T${searchEndTime}:00&api-key=${baseApiData.apiKey}`;
+    const searchEndTime = this.formatTimeForApiURL(6);
+    const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=2021-05-${todaysDate}T${searchStartTime}&end=2021-05-${todaysDate}T${searchEndTime}&api-key=${baseApiData.apiKey}`;
 
     return scheduleURL;
   }
