@@ -23,6 +23,7 @@ class TransitSchedule {
     // }
 
     const data = await response.json();
+
     return data;
   }
 

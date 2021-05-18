@@ -10,7 +10,8 @@ class UI {
 
   handleSubmit = async (event) => {
     const searchInput = this.searchInput.get();
-    await transitSchedule.getSearchResults(searchInput);
+    const sanitizedInput = StringFormatter.sanitizeInputString(searchInput);
+    await transitSchedule.getSearchResults(sanitizedInput);
     renderer.currentSearchedInput = searchInput;
     renderer.renderPage(searchInput);
   }
