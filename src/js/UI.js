@@ -19,23 +19,28 @@ class Renderer {
   }
 
   buildSearchResultHTML = () => {
+    const searchResults = transitSchedule.searchResults;
+
+    if (searchResults.length <= 0) {
+      return 'Please enter a valid search';
+    }
+
     let searchList = '';
 
-    transitSchedule.searchResults.forEach(result => {
+    searchResults.forEach(result => {
       searchList += `<a href="#" data-street-key=${result.id}>${result.streetName}</a>`
     })
-    console.log(transitSchedule.searchResults)
     return searchList;
   }
 
-  renderPage = (streetName) => {
+  renderPage = (streetName = '') => {
     document.body.innerHTML = `
 <aside>
   <div class="titlebar">
     <i class="fas fa-bus-alt" aria-hidden="true"></i>Nexbuss
   </div>
-  <form>
-    <input type="text" placeholder="Search for a Street" />
+  <form id="search-form">
+    <input id="search-input" type="text" placeholder="Search for a Street" />
   </form>
   <section class="streets">
     ${this.buildSearchResultHTML()}
@@ -64,8 +69,30 @@ class Renderer {
 }
 
 const renderer = new Renderer();
+renderer.renderPage();
 
-document.body.addEventListener('click', event => {
-  renderer.renderPage(transitSchedule.searchResults[0].streetName);
+
+
+document.body.addEventListener('keydown', async (event) => {
+  if (event.key === 'Enter' && event.target.id === 'search-input') {
+    const searchInput = document.querySelector('#search-input').value;
+      await transitSchedule.search(searchInput);
+    // event.preventDefault();
+    // .then(searchResults => {
+    //   // return transitSchedule.getStops(searchResults)
+    // })
+    // .then(stops => {
+    //   // transitSchedule.streetStops = stops.stops;
+    //   // return transitSchedule.getStopSchedules();
+    // })
+    // .then(schedules => console.log(transitSchedule))
+    renderer.renderPage();
+    searchInput.value = '';
+    // .then(()=> console.log(transitSchedule.searchResults) )
+    // .then(data => buildHTMLLinks)
+    // getStops on click
+    // .then(data => getStops(data))
+    // .then(data => getStopSchedules(data))
+  }
 })
 

@@ -9,13 +9,20 @@ class TransitSchedule {
     this.stopSchedule = [];
   }
 
-  search = async searchString => {
+  search = async (searchString) => {
+    if(searchString === ''){
+      searchString = 'no input';
+    }
+
     const searchURL = `${baseSearchURL}${searchString}`;
     const searchResults = await transitSchedule.getData(searchURL);
+    const filteredResults = [];
 
     searchResults.streets.forEach(result => {
-      this.searchResults.push({ id: result.key, streetName: result.name });
+      filteredResults.push({ id: result.key, streetName: result.name });
     })
+
+    this.searchResults = filteredResults;
 
     return searchResults;
   }
@@ -32,16 +39,12 @@ class TransitSchedule {
 
   }
 
-  getData = async url => {
+  getData = async (url) => {
     const response = await fetch(url);
     const data = await response.json();
 
     return data;
   }
-
-  // getStopInformation = () => {
-
-  // }
 
   getStopScheduleURL = stopId => {
     const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&api-key=${apiKey}`;
@@ -70,18 +73,3 @@ class TransitSchedule {
 
 const transitSchedule = new TransitSchedule();
 
-transitSchedule.search('kinver')
-  .then(searchResults => {
-    // render search
-    return transitSchedule.getStops(searchResults)
-  })
-  .then(stops => {
-    // transitSchedule.streetStops = stops.stops;
-    // return transitSchedule.getStopSchedules();
-  })
-  .then(schedules => console.log(transitSchedule))
-// .then(()=> console.log(transitSchedule.searchResults) )
-  // .then(data => buildHTMLLinks)
-  // getStops on click
-  // .then(data => getStops(data))
-  // .then(data => getStopSchedules(data))
