@@ -12,11 +12,11 @@ class TransitSchedule {
   constructor() {
     this.searchResults = [];
     this.streetStops = [];
+    this.scheduleQueryTime = '';
     this.currentStreetTitle = '';
   }
 
   getData = async url => {
-    console.log(url)
     const response = await fetch(url);
     if (response.status !== 200) {
       throw new Error('Fetching of URL not successful')
@@ -27,15 +27,10 @@ class TransitSchedule {
     return data;
   }
 
-  formatTimeForApiURL = hoursFromNow => {
-    const twoDigitHour = parseInt(moment(new Date()).format('hh')) + hoursFromNow;
-    return moment(new Date()).format(`${twoDigitHour}:mm:ss`);
-  }
-
   getStopScheduleURL = stopId => {
     const todaysDate = new Date().getDate();
-    const searchStartTime = this.formatTimeForApiURL(0);
-    const searchEndTime = this.formatTimeForApiURL(6);
+    const searchStartTime = TimeFormatter.formatTimeForApiURL(0);
+    const searchEndTime = TimeFormatter.formatTimeForApiURL(6);
     const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=2021-05-${todaysDate}T${searchStartTime}&end=2021-05-${todaysDate}T${searchEndTime}&api-key=${baseApiData.apiKey}`;
 
     return scheduleURL;
@@ -73,14 +68,16 @@ class TransitSchedule {
 
   getStops = async streetId => {
     let filteredStops = [];
+    transitSchedule.scheduleQueryTime = TimeFormatter.getCurrentTime();
+
     const streetStops = await this.getData(`${baseApiData.baseStopURL.get()}${streetId}`);
+
 
     streetStops.stops.forEach(stop => {
       filteredStops.push({ id: stop.key, name: stop.name, crossStreet: stop['cross-street'].name, direction: stop.direction })
     })
 
     filteredStops = await this.getStopSchedules(filteredStops);
-
     filteredStops.sort((a, b) => {
       return a.schedule.rawStopTime - b.schedule.rawStopTime;
     })

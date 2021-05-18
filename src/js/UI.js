@@ -1,5 +1,6 @@
 class UI {
   constructor() {
+    this.currentTime = moment().format('MMMM Do YYYY, h:mm:ss a');
     this.searchInput = {
       get: () => {
         return document.querySelector('#search-input').value;
@@ -10,8 +11,10 @@ class UI {
 
 
   handleSubmit = async (event) => {
-    await transitSchedule.getSearchResults(this.searchInput.get());
-    renderer.renderPage(this.searchInput.get());
+    const searchInput = this.searchInput.get();
+    await transitSchedule.getSearchResults(searchInput);
+    renderer.currentSearchedInput = searchInput;
+    renderer.renderPage(searchInput);
   }
 
   handleClick = target => {
@@ -19,7 +22,8 @@ class UI {
       transitSchedule.getStops(target.dataset.streetKey)
         .then(streetStopsData => transitSchedule.streetStops = streetStopsData)
         .then(() => transitSchedule.currentStreetTitle = target.textContent)
-        .then(() => renderer.renderPage())
+        // .then(()=> console.log((transitSchedule.searchCompletionTime.get())))
+        .then(() => renderer.renderPage(renderer.currentSearchedInput))
     }
   }
 }
