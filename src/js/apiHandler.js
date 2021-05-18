@@ -61,10 +61,14 @@ class TransitSchedule {
     const stops = await this.getData(stopScheduleURL);
     const stopSchedule = stops['stop-schedule']['route-schedules'][0];
 
-    if (stops['stop-schedule']['route-schedules'][0] !== undefined) {
+    if (stopSchedule !== undefined) {
       schedule.busNumber = (stopSchedule.route.key);
-      const nextStop = new Date(stopSchedule['scheduled-stops'][0].times.arrival.estimated);
-      schedule.nextStop = moment(nextStop).format('LT');
+      const arrivalTime = stopSchedule['scheduled-stops'][0].times.arrival;
+
+      if (arrivalTime !== undefined) {
+        const nextStop = new Date(arrivalTime.estimated);
+        schedule.nextStop = moment(nextStop).format('LT');
+      }
     }
 
     return schedule;

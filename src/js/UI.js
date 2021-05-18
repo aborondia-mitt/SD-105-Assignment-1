@@ -8,11 +8,10 @@ class UI {
   handleSubmit = async (event) => {
     let searchInput = document.querySelector('#search-input').value;
 
-    if (event.key === 'Enter' && event.target.id === 'search-input') {
-      await transitSchedule.search(searchInput);
-      renderer.renderPage();
-      searchInput = '';
-    }
+
+    await transitSchedule.search(searchInput);
+    renderer.renderPage();
+    searchInput = '';
 
   }
 
@@ -21,14 +20,16 @@ class UI {
       await transitSchedule.getStops(target.dataset.streetKey)
         .then(stopPromises => Promise.all(stopPromises))
         .then(stopPromises => transitSchedule.streetStops = stopPromises)
-      .then(() => renderer.renderPage(target.textContent))
+        .then(() => renderer.renderPage(target.textContent))
     }
   }
 }
 
 const ui = new UI();
 
-document.body.addEventListener('keydown', event => {
+document.body.addEventListener('submit', event => {
+  event.preventDefault()
+
   ui.handleSubmit(event);
 })
 
