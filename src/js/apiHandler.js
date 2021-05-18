@@ -10,7 +10,7 @@ class TransitSchedule {
 
   search = async (searchString) => {
     if (searchString === '') {
-      searchString = 'no input';
+      searchString = 'NOSEARCHENTERED';
     }
 
     const searchURL = `${baseSearchURL}${searchString}`;
@@ -37,6 +37,10 @@ class TransitSchedule {
 
     filteredStops = await this.getStopSchedules(filteredStops);
 
+    filteredStops.sort((a, b) => {
+      return a.schedule.rawStopTime - b.schedule.rawStopTime;
+    })
+
     return filteredStops;
   }
 
@@ -47,16 +51,21 @@ class TransitSchedule {
     return data;
   }
 
+  getTime = (additionalHours = 0) => {
+    return (parseInt(moment(new Date()).format('h')) + additionalHours).toString().padStart(2, '0')
+  }
+
   getStopScheduleURL = stopId => {
     const todaysDate = new Date().getDate();
-    const currentHour = moment(new Date()).format('h').toString().padStart(2, '0');
-    const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=2021-05-${todaysDate}T${currentHour}:00&end=2021-05-${todaysDate}T24:00:00&api-key=${apiKey}`;
+    const inSixHours = this.getTime(6);
+    const currentHour = this.getTime();
+    const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=2021-05-${todaysDate}T${currentHour}:00&end=2021-05-${todaysDate}T${inSixHours}:00&api-key=${apiKey}`;
 
     return scheduleURL;
   }
 
   getStopInformation = async (streetStop) => {
-    const schedule = { busNumber: '', nextStop: '' };
+    const schedule = { busNumber: 'N/A', nextStop: 'N/A' };
     const stopScheduleURL = this.getStopScheduleURL(streetStop.id);
     const stops = await this.getData(stopScheduleURL);
     const stopSchedule = stops['stop-schedule']['route-schedules'][0];
@@ -68,6 +77,7 @@ class TransitSchedule {
       if (arrivalTime !== undefined) {
         const nextStop = new Date(arrivalTime.estimated);
         schedule.nextStop = moment(nextStop).format('LT');
+        schedule.rawStopTime = nextStop.getTime();
       }
     }
 

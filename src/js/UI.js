@@ -1,5 +1,3 @@
-
-
 class UI {
   constructor() {
 
@@ -8,18 +6,15 @@ class UI {
   handleSubmit = async (event) => {
     let searchInput = document.querySelector('#search-input').value;
 
-
     await transitSchedule.search(searchInput);
     renderer.renderPage();
     searchInput = '';
-
   }
 
-  handleClick = async (target) => {
+  handleClick = target => {
     if (target.tagName === 'A') {
-      await transitSchedule.getStops(target.dataset.streetKey)
-        .then(stopPromises => Promise.all(stopPromises))
-        .then(stopPromises => transitSchedule.streetStops = stopPromises)
+      transitSchedule.getStops(target.dataset.streetKey)
+        .then(streetStopsData => transitSchedule.streetStops = streetStopsData)
         .then(() => renderer.renderPage(target.textContent))
     }
   }
