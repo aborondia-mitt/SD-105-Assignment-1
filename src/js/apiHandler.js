@@ -23,6 +23,7 @@ class TransitSchedule {
     })
 
     this.searchResults = filteredResults;
+    this.streetStops = [];
 
     return searchResults;
   }

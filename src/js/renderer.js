@@ -13,7 +13,7 @@ class Renderer {
       <td>TBD</td>
         </tr>`;
     })
-    
+
     return scheduledStopList;
   }
 
