@@ -1,6 +1,12 @@
-const apiKey = 'd7PLUCql1DUVNbas9tgX';
-const baseSearchURL = `https://api.winnipegtransit.com/v3/streets.json?usage=long&api-key=${apiKey}&name=`;
-const baseStopURL = `https://api.winnipegtransit.com/v3/stops.json?usage=long&api-key=${apiKey}&street=`;
+const baseApiData = {
+  apiKey: 'd7PLUCql1DUVNbas9tgX',
+  baseSearchURL: {
+    get: () => `https://api.winnipegtransit.com/v3/streets.json?usage=long&api-key=${baseApiData.apiKey}&name=`
+  },
+  baseStopURL: {
+    get: () => `https://api.winnipegtransit.com/v3/stops.json?usage=long&api-key=${baseApiData.apiKey}&street=`
+  },
+}
 
 class TransitSchedule {
   constructor() {
@@ -27,9 +33,9 @@ class TransitSchedule {
 
   getStopScheduleURL = stopId => {
     const todaysDate = new Date().getDate();
-    const inSixHours = this.formatTimeForApiURL(6);
-    const currentHour = this.formatTimeForApiURL(0);
-    const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=2021-05-${todaysDate}T${currentHour}:00&end=2021-05-${todaysDate}T${inSixHours}:00&api-key=${apiKey}`;
+    const searchEndTime = this.formatTimeForApiURL(6);
+    const searchStartTime = this.formatTimeForApiURL(0);
+    const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=2021-05-${todaysDate}T${searchStartTime}:00&end=2021-05-${todaysDate}T${searchEndTime}:00&api-key=${baseApiData.apiKey}`;
 
     return scheduleURL;
   }
@@ -66,7 +72,7 @@ class TransitSchedule {
 
   getStops = async streetId => {
     let filteredStops = [];
-    const streetStops = await this.getData(`${baseStopURL}${streetId}`);
+    const streetStops = await this.getData(`${baseApiData.baseStopURL.get()}${streetId}`);
 
     streetStops.stops.forEach(stop => {
       filteredStops.push({ id: stop.key, name: stop.name, crossStreet: stop['cross-street'].name, direction: stop.direction })
@@ -83,7 +89,7 @@ class TransitSchedule {
 
   getSearchResults = async searchString => {
     const filteredResults = [];
-    const searchURL = `${baseSearchURL}${searchString}`;
+    const searchURL = `${baseApiData.baseSearchURL.get()}${searchString}`;
     const searchResults = await transitSchedule.getData(searchURL)
       .catch(() => {
         renderer.renderPage();

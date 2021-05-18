@@ -46,7 +46,7 @@ class Renderer {
     <i class="fas fa-bus-alt" aria-hidden="true"></i>Nexbuss
   </div>
   <form id="search-form">
-    <input id="search-input" type="text" placeholder="Search for a Street" name="inpu" "autocomplete="off" />
+    <input id="search-input" type="text" placeholder="Search for a Street" "autocomplete="off" />
   </form>
   <section class="streets">
     ${this.buildSearchResultHTML(searchInput)}

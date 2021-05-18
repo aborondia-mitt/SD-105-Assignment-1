@@ -1,15 +1,17 @@
 class UI {
   constructor() {
-
+    this.searchInput = {
+      get: () => {
+        return document.querySelector('#search-input').value;
+      }
+    }
   }
 
-  get searchInput() {
-    return document.querySelector('#search-input').value;
-  }
+
 
   handleSubmit = async (event) => {
-    await transitSchedule.getSearchResults(this.searchInput);
-    renderer.renderPage(this.searchInput);
+    await transitSchedule.getSearchResults(this.searchInput.get());
+    renderer.renderPage(this.searchInput.get());
   }
 
   handleClick = target => {
