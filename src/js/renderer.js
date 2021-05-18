@@ -4,15 +4,16 @@ class Renderer {
 
   buildScheduledStopsHTML = () => {
     let scheduledStopList = '';
-    transitSchedule.streetStops.forEach(stop => {
+    for (let i = 0; i < transitSchedule.streetStops.length; i++) {
+      const stop = transitSchedule.streetStops[i];
       scheduledStopList += `<tr>
       <td>${stop.name}</td>
       <td>${stop.crossStreet}</td>
       <td>${stop.direction}</td>
-      <td>TBD</td>
-      <td>TBD</td>
+      <td>${stop.schedule.busNumber}</td>
+      <td>${stop.schedule.nextStop}</td>
         </tr>`;
-    })
+    }
 
     return scheduledStopList;
   }

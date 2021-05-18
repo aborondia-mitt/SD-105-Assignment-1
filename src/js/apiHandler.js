@@ -6,7 +6,6 @@ class TransitSchedule {
   constructor() {
     this.searchResults = [];
     this.streetStops = [];
-    this.stopSchedule = [];
   }
 
   search = async (searchString) => {
@@ -29,15 +28,16 @@ class TransitSchedule {
   }
 
   getStops = async streetId => {
+    let filteredStops = [];
     const streetStops = await this.getData(`${baseStopURL}${streetId}`);
-    const filteredStops = [];
+
     streetStops.stops.forEach(stop => {
       filteredStops.push({ id: stop.key, name: stop.name, crossStreet: stop['cross-street'].name, direction: stop.direction })
     })
 
-    this.streetStops = filteredStops;
+    filteredStops = await this.getStopSchedules(filteredStops);
 
-    this.getStopSchedules();
+    return filteredStops;
   }
 
   getData = async (url) => {
@@ -48,25 +48,36 @@ class TransitSchedule {
   }
 
   getStopScheduleURL = stopId => {
-    const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&api-key=${apiKey}`;
+    const todaysDate = new Date().getDate();
+    const currentHour = moment(new Date()).format('h').toString().padStart(2, '0');
+    const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=2021-05-${todaysDate}T${currentHour}:00&end=2021-05-${todaysDate}T24:00:00&api-key=${apiKey}`;
 
     return scheduleURL;
   }
 
-  getStopSchedules = async () => {
-    this.streetStops.forEach(async streetStop => {
-      // streetStop.schedule = {};
-      const stopScheduleURL = this.getStopScheduleURL(streetStop.id);
-      const stops = await this.getData(stopScheduleURL);
-      streetStop.scheduledStops = stops;
-      // this.getStopInformation(stops, streetStop);
-    })
+  getStopInformation = async (streetStop) => {
+    const schedule = { busNumber: '', nextStop: '' };
+    const stopScheduleURL = this.getStopScheduleURL(streetStop.id);
+    const stops = await this.getData(stopScheduleURL);
+    const stopSchedule = stops['stop-schedule']['route-schedules'][0];
 
-    // scheduledStops = await Promise.all(scheduledStops);
-    // const soonestStops = getStopTimes(scheduledStops);
+    if (stops['stop-schedule']['route-schedules'][0] !== undefined) {
+      schedule.busNumber = (stopSchedule.route.key);
+      const nextStop = new Date(stopSchedule['scheduled-stops'][0].times.arrival.estimated);
+      schedule.nextStop = moment(nextStop).format('LT');
+    }
 
-    // return soonestStops;
-    // return scheduledStops;
+    return schedule;
+  }
+
+  getStopSchedules = async (filteredStops) => {
+    const stopsWithSchedule = filteredStops;
+
+    for (let i = 0; i < stopsWithSchedule.length; i++) {
+      stopsWithSchedule[i].schedule = await this.getStopInformation(stopsWithSchedule[i]);
+    }
+
+    return stopsWithSchedule;
   }
 }
 

@@ -13,13 +13,15 @@ class UI {
       renderer.renderPage();
       searchInput = '';
     }
-    
+
   }
 
   handleClick = async (target) => {
     if (target.tagName === 'A') {
       await transitSchedule.getStops(target.dataset.streetKey)
-      renderer.renderPage(target.textContent);
+        .then(stopPromises => Promise.all(stopPromises))
+        .then(stopPromises => transitSchedule.streetStops = stopPromises)
+      .then(() => renderer.renderPage(target.textContent))
     }
   }
 }
@@ -28,7 +30,6 @@ const ui = new UI();
 
 document.body.addEventListener('keydown', event => {
   ui.handleSubmit(event);
-  event.preventDefault();
 })
 
 document.body.addEventListener('click', event => {
