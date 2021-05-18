@@ -27,8 +27,9 @@ class TransitSchedule {
     return data;
   }
 
-  formatTimeForApiURL = additionalHours => {
-    return (parseInt(moment(new Date()).format('h')) + additionalHours).toString().padStart(2, '0')
+  formatTimeForApiURL = hoursFromNow => {
+    const twoDigitHour = (parseInt(moment(new Date()).format('h')) + hoursFromNow).toString().padStart(2, '0');
+    return moment(new Date()).format(`${twoDigitHour}:m`);
   }
 
   getStopScheduleURL = stopId => {
