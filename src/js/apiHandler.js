@@ -9,56 +9,26 @@ class TransitSchedule {
     this.currentStreetTitle = '';
   }
 
-  search = async searchString => {
-    if (searchString === '') {
-      searchString = 'NOSEARCHENTERED';
-    }
-
-    const searchURL = `${baseSearchURL}${searchString}`;
-    const searchResults = await transitSchedule.getData(searchURL);
-    const filteredResults = [];
-
-    searchResults.streets.forEach(result => {
-      filteredResults.push({ id: result.key, streetName: result.name });
-    })
-
-    this.searchResults = filteredResults;
-
-    return searchResults;
-  }
-
-  getStops = async streetId => {
-    let filteredStops = [];
-    const streetStops = await this.getData(`${baseStopURL}${streetId}`);
-
-    streetStops.stops.forEach(stop => {
-      filteredStops.push({ id: stop.key, name: stop.name, crossStreet: stop['cross-street'].name, direction: stop.direction })
-    })
-
-    filteredStops = await this.getStopSchedules(filteredStops);
-
-    filteredStops.sort((a, b) => {
-      return a.schedule.rawStopTime - b.schedule.rawStopTime;
-    })
-
-    return filteredStops;
-  }
-
   getData = async url => {
     const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error('Fetch not successful')
+    }
+
     const data = await response.json();
 
     return data;
   }
 
-  getTime = additionalHours => {
+  formatTimeForApiURL = additionalHours => {
     return (parseInt(moment(new Date()).format('h')) + additionalHours).toString().padStart(2, '0')
   }
 
   getStopScheduleURL = stopId => {
     const todaysDate = new Date().getDate();
-    const inSixHours = this.getTime(6);
-    const currentHour = this.getTime(0);
+    const inSixHours = this.formatTimeForApiURL(6);
+    const currentHour = this.formatTimeForApiURL(0);
     const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=2021-05-${todaysDate}T${currentHour}:00&end=2021-05-${todaysDate}T${inSixHours}:00&api-key=${apiKey}`;
 
     return scheduleURL;
@@ -92,6 +62,41 @@ class TransitSchedule {
     }
 
     return stopsWithSchedule;
+  }
+
+  getStops = async streetId => {
+    let filteredStops = [];
+    const streetStops = await this.getData(`${baseStopURL}${streetId}`);
+
+    streetStops.stops.forEach(stop => {
+      filteredStops.push({ id: stop.key, name: stop.name, crossStreet: stop['cross-street'].name, direction: stop.direction })
+    })
+
+    filteredStops = await this.getStopSchedules(filteredStops);
+
+    filteredStops.sort((a, b) => {
+      return a.schedule.rawStopTime - b.schedule.rawStopTime;
+    })
+
+    return filteredStops;
+  }
+
+  getSearchResults = async searchString => {
+    const filteredResults = [];
+    const searchURL = `${baseSearchURL}${searchString}`;
+    const searchResults = await transitSchedule.getData(searchURL)
+      .catch(() => {
+        renderer.renderPage();
+        throw new Error('The search input was invalid');
+      })
+
+    searchResults.streets.forEach(result => {
+      filteredResults.push({ id: result.key, streetName: result.name });
+    })
+
+    this.searchResults = filteredResults;
+
+    return searchResults;
   }
 }
 

@@ -3,12 +3,13 @@ class UI {
 
   }
 
-  handleSubmit = async (event) => {
-    let searchInput = document.querySelector('#search-input').value;
+  get searchInput() {
+    return document.querySelector('#search-input').value;
+  }
 
-    await transitSchedule.search(searchInput);
-    renderer.renderPage();
-    searchInput = '';
+  handleSubmit = async (event) => {
+    await transitSchedule.getSearchResults(this.searchInput);
+    renderer.renderPage(this.searchInput);
   }
 
   handleClick = target => {

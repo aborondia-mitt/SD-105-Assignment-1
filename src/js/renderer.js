@@ -18,12 +18,18 @@ class Renderer {
     return scheduledStopList;
   }
 
-  buildSearchResultHTML = () => {
+  buildSearchResultHTML = (searchInput) => {
     const searchResults = transitSchedule.searchResults;
 
-    if (searchResults.length <= 0) {
+    if (searchInput === '' || searchInput === undefined) {
       return 'Please enter a valid search';
     }
+
+    if (searchResults.length <= 0) {
+      return 'There were no results for that search'
+    }
+
+
 
     let searchList = '';
 
@@ -33,17 +39,17 @@ class Renderer {
     return searchList;
   }
 
-  renderPage = () => {
+  renderPage = (searchInput) => {
     document.body.innerHTML = `
 <aside>
   <div class="titlebar">
     <i class="fas fa-bus-alt" aria-hidden="true"></i>Nexbuss
   </div>
   <form id="search-form">
-    <input id="search-input" type="text" placeholder="Search for a Street" />
+    <input id="search-input" type="text" placeholder="Search for a Street" name="inpu" "autocomplete="off" />
   </form>
   <section class="streets">
-    ${this.buildSearchResultHTML()}
+    ${this.buildSearchResultHTML(searchInput)}
   </section>
 </aside>
 <main>
