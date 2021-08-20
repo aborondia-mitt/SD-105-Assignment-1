@@ -24,10 +24,12 @@ class TransitSchedule {
   }
 
   getStopScheduleURL = stopId => {
-    const todaysDate = new Date().getDate();
-    const searchStartTime = TimeFormatter.formatTimeForApiURL(0);
-    const searchEndTime = TimeFormatter.formatTimeForApiURL(6);
-    const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=2021-05-${todaysDate}T${searchStartTime}&end=2021-05-${todaysDate}T${searchEndTime}&api-key=${baseApiData.apiKey}`;
+    const year = TimeFormatter.getYear();
+    const month = TimeFormatter.getMonth();
+    const day = TimeFormatter.getDay();
+    const searchStartTime = TimeFormatter.getTime();
+    const searchEndTime = TimeFormatter.getTime(6);
+    const scheduleURL = `https://api.winnipegtransit.com/v3/stops/${stopId}/schedule.json?usage=long&start=${year}-${month}-${day}T${searchStartTime}&end=${year}-${month}-${day}T${searchEndTime}&api-key=${baseApiData.apiKey}`;
 
     return scheduleURL;
   }

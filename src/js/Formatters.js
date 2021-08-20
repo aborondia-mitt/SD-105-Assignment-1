@@ -3,9 +3,13 @@ class TimeFormatter {
     return moment().format('MMMM Do YYYY, h:mm:ss a');
   }
 
-  static formatTimeForApiURL = hoursFromNow => {
-    return new moment().add(hoursFromNow, 'h').format('HH:mm:ss');
-  }
+  static getYear = () => moment().format('YYYY');
+
+  static getMonth = () => moment().format('MM');
+
+  static getDay = () => moment().format('DD');
+  
+  static getTime = (hoursFromNow = 0) => moment().add(hoursFromNow, 'h').format('HH:mm:ss');
 }
 
 class StringFormatter {
